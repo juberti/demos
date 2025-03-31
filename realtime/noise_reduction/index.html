@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>Realtime Loopback</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../main.css">    
+  </head>
+  <body>    
+    <div class="container">  
+      <h1>🔁 Realtime Loopback</h1>
+      <div>
+        This demo listens to your microphone using the OpenAI Realtime API. When you finish speaking, the demo will echo back what you said.
+        You can adjust the noise reduction settings using the dropdown below.
+      </div>
+      <div>
+        <label for="openai-api-key">API Key</label>
+        <input id="openai-api-key" type="password" />
+      </div>
+      <div>
+        <label for="noise-reduction">Noise Reduction</label>
+        <select id="noise-reduction">
+          <option> </option>
+          <option>far_field</option>
+          <option>near_field</option>
+        </select>
+      </div>   
+      <div class="controls-row">
+        <div class="buttons-group">
+          <button id="start-microphone" onclick="startMicrophone()">Start Mic</button>
+          <button id="start-file" onclick="startFile()">Start File</button>
+          <button id="stop" onclick="stop()">Stop</button>
+        </div>
+        <div class="status-indicator">
+          <span id="status-text"></span>
+        </div>
+      </div>
+    </div>
+    <script src="../session.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

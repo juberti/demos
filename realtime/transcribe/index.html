@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>Transceiver Transcriber</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../main.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>📝 Realtime Transcription</h1>
+      <div>  
+        <div>
+          <label for="openai-api-key">API Key</label>
+          <input id="openai-api-key" type="password" />
+        </div>
+        <div>
+          <label for="model">Model</label>
+          <select id="model">
+            <option value="gpt-4o-transcribe">gpt-4o-transcribe</option>
+            <option value="gpt-4o-mini-transcribe">gpt-4o-mini-transcribe</option>
+          </select>
+        </div>
+        <div>
+          <label for="prompt">Prompt</label>
+          <textarea id="prompt" rows="3"></textarea>
+        </div>      
+        <div>
+          <label for="transcript">Transcript</label>
+          <textarea id="transcript" rows="20" readonly></textarea>    
+        </div>          
+        <div>
+          <button id="start-microphone" onclick="startMicrophone()">Start Mic</button>
+          <button id="start-file" onclick="startFile()">Start File</button>
+          <button id="stop" onclick="stop()">Stop</button>
+        </div>
+        <div>
+          <audio id="audio-file" src="/assets/audio/harvard01.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <script src="../session.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

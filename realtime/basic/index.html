@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <title>Realtime Voice Agent</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../main.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>🤖 Realtime Voice Agent</h1>
+      <div>  
+        <div>
+          <label for="openai-api-key">API Key</label>
+          <input id="openai-api-key" type="password" />
+        </div>
+        <div>
+          <label for="model">Model</label>
+          <select id="model">
+            <option>gpt-4o-realtime</option>
+            <option>gpt-4o-mini-realtime</option>
+          </select>
+        </div>
+        <div>
+          <label for="voice">Voice</label>
+          <select id="voice">
+            <option>alloy</option>
+            <option>echo</option>
+            <option>fable</option>
+            <option>onyx</option>
+          </select>
+        </div>
+        <div>
+          <label for="instructions">Instructions</label>
+          <textarea id="instructions" rows="3"></textarea>
+        </div>   
+        <div>
+          <button id="start-microphone" onclick="startMicrophone()">Start Mic</button>        
+          <button id="stop" onclick="stop()">Stop</button>
+        </div>
+        <audio id="audio"> </audio>
+      </div>
+    </div>
+    <script src="../session.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
