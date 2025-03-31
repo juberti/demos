@@ -114,9 +114,9 @@ function handleTranscript(transcript) {
   const lastNewline = transcriptEl.value.lastIndexOf("\n");
   transcriptEl.value = transcriptEl.value.substring(0, lastNewline + 1);
   transcriptEl.value += transcript.transcript;
-  if (!transcript.partial) {
-    transcriptEl.value += ` [${transcript.latencyMs}ms]\r\n`;
-  }
+  //if (!transcript.partial) {
+  //  transcriptEl.value += ` [${transcript.latencyMs}ms]\r\n`;
+  //}
   transcriptEl.scrollTop = transcriptEl.scrollHeight;
 }
 
