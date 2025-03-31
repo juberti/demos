@@ -34,10 +34,11 @@ class Session {
   async startInternal(stream, sessionConfig, tokenEnpoint) {
     this.ms = stream;  
     this.pc = new RTCPeerConnection();
+    this.pc.ontrack = (e) => this.ontrack?.(e);
     this.pc.addTrack(stream.getTracks()[0]);
     this.pc.onconnectionstatechange = () => this.onconnectionstatechange?.(this.pc.connectionState);
     this.dc = this.pc.createDataChannel("");  
-    this.dc.onopen = () => this.onopen?.();
+    this.dc.onopen = (e) => this.onopen?.();
     this.dc.onmessage = (e) => this.onmessage?.(JSON.parse(e.data));
 
     const offer = await this.pc.createOffer();

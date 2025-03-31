@@ -8,6 +8,7 @@ const startMicrophoneEl = $("#start-microphone");
 const startFileEl = $("#start-file");
 const stopEl = $("#stop");
 const audioInputEl = $("#audio-file");
+const statusEl = $("#status");
 const prefs = [apiKeyEl, modelEl, promptEl];
 
 let session = null;
@@ -26,6 +27,7 @@ function initState() {
 }
 
 function updateState(started) {
+  statusEl.textContent = "";
   promptEl.disabled = started;
   startMicrophoneEl.disabled = started;
   startFileEl.disabled = started;
@@ -51,9 +53,9 @@ async function start(stream) {
   updateState(true);
   transcriptEl.value = "";
   session = new Session(apiKeyEl.value);
-  session.ontranscript = t => handleTranscript(t);
-  session.onerror = e => handleError(e);
+  session.onconnectionstatechange = state => statusEl.textContent = state;
   session.onmessage = parsed => handleMessage(parsed);
+  session.onerror = e => handleError(e);  
   const sessionConfig = {
     prompt: promptEl.value || undefined,
     input_audio_transcription: {
@@ -67,6 +69,7 @@ function stop() {
   updateState(false);
   audioInputEl.pause();
   session.stop();
+  session = null;
 }
 
 function handleMessage(parsed) {

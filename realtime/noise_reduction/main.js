@@ -4,7 +4,7 @@ const apiKeyEl = $("#openai-api-key");
 const nrEl = $("#noise-reduction");
 const startMicrophoneEl = $("#start-microphone");
 const stopEl = $("#stop");
-const statusEl = $("#status-text");
+const statusEl = $("#status");
 const prefs = [apiKeyEl, nrEl];
 
 let session = null;
@@ -18,14 +18,18 @@ function initState() {
     });
   });
   updateState(false);
+  nrEl.addEventListener("change", () => {
+    const message = { type: "session.update", session: { input_audio_noise_reduction: nrEl.value ? { type: nrEl.value } : null } };
+    if (session) {
+      session.sendMessage(message);
+    }
+  });
 }
 
 function updateState(started) {
+  statusEl.textContent = "";
   startMicrophoneEl.disabled = started;
   stopEl.disabled = !started;
-  if (!started) {
-    statusEl.textContent = "";
-  }
 }
 
 async function startMicrophone() {
@@ -51,13 +55,15 @@ async function start(stream) {
 function stop() {
   updateState(false);
   session.stop();
+  session = null;
 }
 
 function handleMessage(parsed) {
-  //console.log(parsed);
+  console.log(parsed);
   switch (parsed.type) {
     case "input_audio_buffer.committed":
-      session.requestItem(parsed.item_id);
+      const message = { type: "conversation.item.retrieve", item_id: parsed.item_id };
+      session.sendMessage(message);
       break;
     case "conversation.item.retrieved":
       playAudio(parsed.item.content[0].audio);
