@@ -52,7 +52,7 @@ async function start(stream) {
   session.onerror = e => handleError(e);
   
   const sessionConfig = {
-    model: "gpt-4o-realtime",
+    model: "gpt-4o-mini-realtime-preview",
     instructions: "Always generate an empty response and return control back to the user immediately.",
     input_audio_noise_reduction: nrEl.value ? { type: nrEl.value } : undefined
   }
