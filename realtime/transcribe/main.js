@@ -67,10 +67,10 @@ async function start(stream) {
   session.onconnectionstatechange = state => statusEl.textContent = state;
   session.onmessage = parsed => handleMessage(parsed);
   session.onerror = e => handleError(e);  
-  const sessionConfig = {
-    prompt: promptEl.value || undefined,
+  const sessionConfig = {    
     input_audio_transcription: {
       model: modelEl.value,
+      prompt: promptEl.value || undefined,
     }
   }
   await session.startTranscription(stream, sessionConfig);
