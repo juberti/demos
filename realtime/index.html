@@ -3,14 +3,45 @@
     <meta charset="utf-8">
     <title>Realtime API Demos</title>
     <link rel="stylesheet" href="main.css">
+    <style>
+      .container {
+        position: relative;       
+      }
+      .github-link {
+        position: absolute;
+        bottom: 0px;
+        right: 12px;
+        font-size: 12px;
+      }
+      h1 {
+        margin-bottom: 24px;
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
-      <h1>OpenAI Realtime API Demos</h1>        
-      <p>🤖 <a href="./basic/index.html">Realtime Voice Agent Demo</a>: Lets you chat with a simple voice agent.</p>
-      <p>📝 <a href="./transcribe/index.html">Realtime Transcription Demo</a>: Transcribes mic or audio file input.</p>
-      <p>🔁 <a href="./noise_reduction/index.html">Realtime Loopback Demo</a>: Echoes back what you say after applying noise reduction.</p>
-      <!-- <p>📲 <a href="./vibecoder/index.html">Realtime Vibecoder Demo</a>: Demonstrates how to delegate to a reasoning model. </p>
+    <div class="container">    
+      <h1>OpenAI Realtime API Demos</h1>
+      <table style="width:100%; border-collapse: collapse;">
+        <tr>
+          <td>🤖 <a href="./basic/index.html">Realtime Voice Agent Demo</a></td>
+          <td>Lets you chat with a simple voice agent.</td>
+        </tr>
+        <tr>
+          <td>📝 <a href="./transcribe/index.html">Realtime Transcription Demo</a></td>
+          <td>Transcribes mic or audio file input.</td>
+        </tr>
+        <tr>
+          <td>🔁 <a href="./noise_reduction/index.html">Realtime Loopback Demo</a></td>
+          <td>Echoes back what you say after applying noise reduction.</td>
+        </tr>
+        <!--
+        <tr>
+          <td>📲 <a href="./vibecoder/index.html">Realtime Vibecoder Demo</a></td>
+          <td>Demonstrates how to delegate to a reasoning model.</td>
+        </tr>
+        -->
+      </table>
+      <p class="github-link"><a href="https://github.com/juberti/demos">GitHub</a></p>
     </div>
   </body>
 </html>

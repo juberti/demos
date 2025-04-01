@@ -12,7 +12,10 @@ let session = null;
 function initState() {
   prefs.forEach(p => {
     const fqid = p.id != "openai-api-key" ? APP_PREFIX + p.id : p.id;
-    p.value = localStorage.getItem(fqid);
+    const v = localStorage.getItem(fqid);
+    if (v) {
+      p.value = v;
+    }
     p.addEventListener("change", () => {
       localStorage.setItem(fqid, p.value);
     });
@@ -33,6 +36,10 @@ function updateState(started) {
 }
 
 async function startMicrophone() {
+  if (!apiKeyEl.value) {
+    window.alert("Please enter your OpenAI API Key. You can obtain one from https://platform.openai.com/settings/organization/api-keys");
+    return;
+  }
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   start(stream);
 }
