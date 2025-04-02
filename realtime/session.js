@@ -32,10 +32,6 @@ class Session {
   }
 
   async startInternal(stream, sessionConfig, tokenEnpoint) {
-    if (!this.apiKey) {
-      window.alert("Please enter your OpenAI API Key. You can obtain one from https://platform.openai.com/settings/organization/api-keys");
-      throw("No API key provided");
-    }
     this.ms = stream;  
     this.pc = new RTCPeerConnection();
     this.pc.ontrack = (e) => this.ontrack?.(e);

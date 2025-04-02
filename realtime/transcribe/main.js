@@ -46,6 +46,20 @@ async function startMicrophone() {
   start(stream);
 }
 
+function selectFile() {
+  $('#audio-file-picker').click(); 
+}
+
+function handleFileSelect(e) {
+  console.log(e);
+  const file = e.target.files[0];
+  if (file) {
+    console.log(file);
+    audioInputEl.src = URL.createObjectURL(file);    
+  }
+  startFile();
+}
+
 async function startFile() {
   if (!apiKeyEl.value) {
     window.alert("Please enter your OpenAI API Key. You can obtain one from https://platform.openai.com/settings/organization/api-keys");
@@ -53,8 +67,15 @@ async function startFile() {
   }
   audioInputEl.currentTime = 0;
   audioInputEl.onended = () => {
-    stop();
+    // When the input file ends, give the transcription time to complete.
+    setTimeout(() => stop() , 3000);
   };
+  // Can't play until we have metadata.
+  if (audioInputEl.readyState !== HTMLMediaElement.HAVE_METADATA) {
+    await new Promise(resolve => {
+      audioInputEl.onloadedmetadata = resolve;
+    });
+  }
   const stream = audioInputEl.captureStream();
   await start(stream);
   await audioInputEl.play();
@@ -79,7 +100,7 @@ async function start(stream) {
 function stop() {
   updateState(false);
   audioInputEl.pause();
-  session.stop();
+  session?.stop();
   session = null;
 }
 

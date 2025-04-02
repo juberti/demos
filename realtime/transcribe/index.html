@@ -3,6 +3,14 @@
     <title>Realtime Transcription</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../main.css">
+    <style>
+      #file-picker-arrow {
+        margin-left: 8px;
+      }
+      #audio-file-picker {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -33,7 +41,10 @@
       <div class="controls-row">
         <div class="buttons-group">
           <button id="start-microphone" onclick="startMicrophone()">Start Mic</button>
-          <button id="start-file" onclick="startFile()">Start File</button>
+          <button id="start-file" onclick="startFile()">
+            <span class="main-text">Start File</span>
+            <span id="file-picker-arrow" onclick="selectFile(); event.stopPropagation()">&#9660;</span>
+          </button>
           <button id="stop" onclick="stop()">Stop</button>
         </div>
         <div class="status-indicator">
@@ -42,6 +53,7 @@
       </div>
       <div>
         <audio id="audio-file" src="../../assets/audio/harvard01.wav"></audio>
+        <input id="audio-file-picker" type="file" accept="audio/*" onchange="handleFileSelect(event)">
       </div>
     </div>
     <script src="../session.js"></script>
