@@ -3,13 +3,14 @@ const $ = document.querySelector.bind(document);
 const apiKeyEl = $("#openai-api-key");
 const modelEl = $("#model");
 const promptEl = $("#prompt");
+const turnDetectionEl = $("#turn-detection");
 const transcriptEl = $("#transcript");
 const startMicrophoneEl = $("#start-microphone");
 const startFileEl = $("#start-file");
 const stopEl = $("#stop");
 const audioInputEl = $("#audio-file");
 const statusEl = $("#status");
-const prefs = [apiKeyEl, modelEl, promptEl];
+const prefs = [apiKeyEl, modelEl, promptEl, turnDetectionEl];
 
 let session = null;
 let sessionConfig = null;
@@ -31,7 +32,7 @@ function initState() {
 
 function updateState(started) {
   statusEl.textContent = "";
-  promptEl.disabled = started;
+  prefs.forEach(p => p.disabled = started);
   startMicrophoneEl.disabled = started;
   startFileEl.disabled = started;
   stopEl.disabled = !started;
@@ -92,6 +93,9 @@ async function start(stream) {
     input_audio_transcription: {
       model: modelEl.value,
       prompt: promptEl.value || undefined,
+    },
+    turn_detection: {
+      type: turnDetectionEl.value,
     }
   }
   await session.startTranscription(stream, sessionConfig);
