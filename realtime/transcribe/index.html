@@ -14,7 +14,11 @@
   </head>
   <body>
     <div class="container">
-      <h1>📝 Realtime Transcription</h1>
+      <div class="header">
+        <a href="../index.html">Realtime Demos</a>
+        <span class="header-icon">📝</span>
+        <span class="header-title">Transcription</span>
+      </div>
       <div>
         This demo shows how to use the OpenAI <a href="https://platform.openai.com/docs/guides/realtime-transcription" target="_blank">Realtime API</a> to transcribe audio in realtime.
         You can either use the microphone or a built-in audio file as input.
@@ -62,6 +66,7 @@
         <audio id="audio-file" src="../../assets/audio/harvard01.wav"></audio>
         <input id="audio-file-picker" type="file" accept="audio/*" onchange="handleFileSelect(event)">
       </div>
+      <p class="github-link"><a href="https://github.com/juberti/demos/tree/main/realtime/transcribe">GitHub</a></p>
     </div>
     <script src="../session.js"></script>
     <script src="main.js"></script>

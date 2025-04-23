@@ -1,6 +1,8 @@
 const $ = document.querySelector.bind(document);
+const instructions = $("#instructions");
 const startBtn = $("#startBtn");
 const muteBtn = $("#muteBtn");
+const statusEl = $("#status");
 startBtn.addEventListener('click', start);
 muteBtn.addEventListener('click', mute);
 
@@ -10,7 +12,7 @@ if (!API_KEY) {
   alert('Please set your API key in the webrtc demo page and then reload this page.');
   // window.location.href = '../realtimeapi/index.html';
 }
-const API_URL = 'https://api.openai.com/v1/chat/completions';
+const API_BASE = 'https://api.openai.com/v1';
 const INSTRUCTIONS = `
 # Personality and Tone
 ## Identity
@@ -62,11 +64,21 @@ const SESSION_PARAMS = {
     },
   ]
 };
+let session = null;
 let previousTurn = [];
 
 async function start() {
+  if (session) {
+    startBtn.textContent = "Start";
+    statusEl.textContent = "";
+    stop();
+    return;
+  } 
+    
+  startBtn.textContent = "Stop";
   const stream = await navigator.mediaDevices.getUserMedia({audio: true});
   session = new Session(API_KEY);
+  session.ontrack = (e) => handleTrack(e);
   session.onopen = () => handleOpen();
   session.onmessage = (e) => handleMessage(e);
   await session.start(stream, SESSION_PARAMS);
@@ -77,8 +89,14 @@ function mute() {
   muteBtn.textContent = session.muted ? "Unmute" : "Mute";
 }
 
+function handleTrack(e) {
+  const audio = new Audio();
+  audio.srcObject = e.streams[0];
+  audio.play();  
+}
+
 async function handleOpen(e) {
-  console.log("handleDataOpen", e);
+  statusEl.textContent = "connected";
   const createResponse = { type: "response.create" };
   session.sendMessage(createResponse);
 }
@@ -88,28 +106,13 @@ async function handleMessage(msg) {
     case "response.function_call_arguments.done":
       if (msg.name === "create_app") {
         const description = JSON.parse(msg.arguments).description;
-      startToast('Generating app...');
-      const code = await generateApp(description, previousTurn);
+        instructions.value = description;
+        statusEl.textContent = "Generating app...";
+        const code = await generateApp(description, previousTurn);
         loadApp(code);
-        stopToast();
+        statusEl.textContent = "";
       }
       break;
-  }
-}
-
-function startToast(message) {
-  const toastContainer = document.getElementById('toast-container');
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.textContent = message;
-  toastContainer.appendChild(toast);
-}
-
-function stopToast() {
-  const toastContainer = document.getElementById('toast-container');
-  const toast = document.querySelector('.toast');
-  if (toast) {
-    toastContainer.removeChild(toast);
   }
 }
 
@@ -130,20 +133,25 @@ function extractCode(markdown) {
  * Calls the OpenAI API with the user description to generate a web app,
  * extracts the HTML code, stores it in a blob, and loads it in an iframe.
  */
-async function generateApp(description, previousTurn = []) {  
+async function generateApp(description, previousTurn = []) {
+  const PROMPT = `
+  Generate a single page HTML/JS app as a complete HTML document.
+  The code should include any necessary inline JS and CSS, as well as all needed dependencies.
+  Place the code in a single markdown code block.
+  `;
   const payload = {
-    model: "o3-mini",
+    model: "o4-mini",
     messages: [
       {
         role: "system",
-        content: "Generate a single page HTML/JS app as a complete HTML document. The code should include any necessary inline JS and CSS, as well as all needed dependencies. Place the code in a single markdown code block."
+        content: PROMPT
       },
       ...previousTurn,
       { role: "user", content: description }
     ]
   };
 
-  const response = await fetch(API_URL, {
+  const response = await fetch(`${API_BASE}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -176,6 +184,6 @@ async function generateApp(description, previousTurn = []) {
 }
 
 function loadApp(code) {
-  const iframe = document.getElementById('previewFrame');
+  const iframe = document.getElementById('app');
   iframe.src = 'data:text/html;charset=utf-8,' + encodeURIComponent(code);
 }
