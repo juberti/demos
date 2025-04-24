@@ -74,10 +74,16 @@ async function start() {
     stop();
     return;
   } 
+
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    window.alert('An OpenAI API key is required to use this application.');    
+    return;
+  }
     
   startBtn.textContent = "Stop";
   const stream = await navigator.mediaDevices.getUserMedia({audio: true});
-  session = new Session(API_KEY);
+  session = new Session(apiKey);
   session.ontrack = (e) => handleTrack(e);
   session.onopen = () => handleOpen();
   session.onmessage = (e) => handleMessage(e);
@@ -155,7 +161,7 @@ async function generateApp(description, previousTurn = []) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${API_KEY}`
+      'Authorization': `Bearer ${getApiKey()}`
     },
     body: JSON.stringify(payload)
   });

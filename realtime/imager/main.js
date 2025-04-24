@@ -9,12 +9,6 @@ startBtn.addEventListener('click', start);
 muteBtn.addEventListener('click', mute);
 downloadBtn.addEventListener('click', download);
 
-// Replace with your actual API key (only for local testing)
-const API_KEY = localStorage.getItem('openai-api-key');
-if (!API_KEY) {
-  alert('Please set your API key in the webrtc demo page and then reload this page.');
-  // window.location.href = '../realtimeapi/index.html';
-}
 const API_BASE = 'https://api.openai.com/v1';
 const INSTRUCTIONS = `
 # Identity
@@ -88,10 +82,16 @@ async function start() {
     session = null;
     return;
   } 
+
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    window.alert('An OpenAI API key is required to use this application.');    
+    return;
+  }
     
   startBtn.textContent = "Stop";
   const stream = await navigator.mediaDevices.getUserMedia({audio: true});
-  session = new Session(API_KEY);
+  session = new Session(apiKey);
   session.ontrack = (e) => handleTrack(e);
   session.onopen = () => handleOpen();
   session.onmessage = (e) => handleMessage(e);
@@ -178,7 +178,7 @@ async function generateImage(description, previousImage) {
 
   const url = `${API_BASE}/${path}`;
   const headers = { 
-    'Authorization': `Bearer ${API_KEY}`
+    'Authorization': `Bearer ${getApiKey()}`
   };
   if (contentType) {
     headers['Content-Type'] = contentType;
