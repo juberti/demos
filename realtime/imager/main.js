@@ -69,7 +69,7 @@ const SESSION_PARAMS = {
 
 const IMAGE_MODEL = "gpt-image-1";
 const IMAGE_SIZE = "1024x1024";
-const IMAGE_QUALITY = "low";
+const IMAGE_QUALITY = "auto";
 
 let session = null;
 let previousImage = null;
