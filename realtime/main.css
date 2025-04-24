@@ -4,7 +4,6 @@ body {
     background-color: #f0f0f0;
 }
 
-
 .container {
     background: #fff;
     max-width: 800px;
@@ -12,12 +11,20 @@ body {
     padding: 30px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    position: relative;
 }
 
-h1 {
+.header {
     margin-top: 0;
-    text-align: center;
+    font-size: 1.8rem;
     margin-bottom: 16px;
+}
+
+.header-title {
+    font-weight: bold;
+}
+
+.header-icon {
 }
 
 label {
@@ -71,4 +78,11 @@ a {
 .status-indicator {
     font-weight: bold;
     font-size: 16px;
+}
+
+.github-link {
+    position: absolute;
+    bottom: 0px;
+    right: 12px;
+    font-size: 12px;
 }

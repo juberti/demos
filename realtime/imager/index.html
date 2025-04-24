@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <xmeta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Realtime Vibe Coder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Realtime Imager</title>
   <meta charset="utf-8">
   <link rel="stylesheet" href="../main.css" />
   <style>
@@ -12,8 +12,8 @@
       flex-direction: row;
       gap: 1rem;
     }
-    #app {
-      width: 1024px;
+    #image {
+      width: 512px;
       height: 512px;
       border: 1px solid #ccc;
       border-radius: 8px;
@@ -25,21 +25,24 @@
       border-radius: 8px;
       padding: 1rem;
     }
+    #container {
+      max-width: 1024px;      
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <a href="../index.html">Realtime Demos</a>
-      <span class="header-icon">🧑‍💻</span>
-      <span class="header-title">Vibe Coder</span>
-    </div>    
+      <span class="header-icon">🎨</span>
+      <span class="header-title">Imager</span>
+    </div>
     <div>
-      This demo shows how to use a coding model to generate an app from a voice conversation.
-      Click the "Start" button to begin, and then tell the agent what kind of app you'd like to create.      
-    </div> 
+      This demo shows how to use the GPT-4o image generator to make an image via a voice conversation.
+      Click the "Start" button to begin, and then tell the agent what you'd like to create.      
+    </div>  
     <div id="main-row">
-      <iframe id="app" sandbox="allow-scripts allow-same-origin" allow="camera; microphone" title="App"></iframe>
+      <img id="image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" title="Image"></img>
       <div id="chat-container">
         <textarea id="instructions"></textarea>
       </div>
@@ -48,12 +51,13 @@
       <div class="buttons-group">
         <button id="startBtn">Start</button>
         <button id="muteBtn">Mute</button>
+        <button id="downloadBtn">Download</button>
       </div>
       <div class="status-indicator">
         <span id="status"></span>
       </div>
+      <p class="github-link"><a href="https://github.com/juberti/demos/tree/main/realtime/imager">GitHub</a></p>
     </div>
-    <p class="github-link"><a href="https://github.com/juberti/demos/tree/main/realtime/vibecoder">GitHub</a></p>
   </div>
   <script src="../session.js"></script>
   <script src="../utils.js"></script>
