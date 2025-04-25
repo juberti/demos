@@ -4,36 +4,59 @@
     <title>Realtime API Demos</title>
     <link rel="stylesheet" href="main.css">
     <style>
-      h1 {
-        margin-bottom: 24px;
+      div {
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      td {
+        padding: 4px;
       }
     </style>
   </head>
   <body>
     <div class="container">    
-      <h1>OpenAI Realtime API Demos</h1>
-      <table style="width:100%; border-collapse: collapse;">
-        <tr>
-          <td>🤖 <a href="./basic/index.html">Realtime Voice Agent Demo</a></td>
+      <div class="header">        
+        OpenAI Realtime API Demos
+      </div>
+      <div>
+        <p>This page shows demos of the <a href="https://platform.openai.com/docs/guides/realtime" target="_blank">OpenAI Realtime API</a>,
+        which makes it easy to build realtime voice and text AI applications. The demos are written in plain HTML and JavaScript,
+        with no dependencies other than the Realtime API; click the GitHub link below to view the source code.
+        Patches and <a href="https://github.com/juberti/demos/issues" target="_blank">issues</a> welcome!</p>
+        <p>Note that the demos require an OpenAI API key, which you can get <a href="https://platform.openai.com/api-keys" target="_blank">here</a>.</p>
+      </div>
+      <div>
+        <table>
+          <tr>
+            <td>🤖 <a href="./basic/index.html">Voice Agent Demo</a></td>
           <td>Lets you chat with a simple voice agent.</td>
-        </tr>
-        <tr>
-          <td>📝 <a href="./transcribe/index.html">Realtime Transcription Demo</a></td>
-          <td>Transcribes mic or audio file input.</td>
-        </tr>
-        <tr>
-          <td>🔁 <a href="./noise_reduction/index.html">Realtime Loopback Demo</a></td>
-          <td>Echoes back what you say after applying noise reduction.</td>
-        </tr> 
-        <tr>
-          <td>🎨 <a href="./imager/index.html">Realtime Image Generation Demo</a></td>
-          <td>Demonstrates how to generate images from a voice conversation.</td>
-        </tr>
-        <tr>
-          <td>🧑‍💻 <a href="./vibecoder/index.html">Realtime Vibe Coding Demo</a></td>
-          <td>Demonstrates how to delegate to a reasoning model for code generation.</td>
-        </tr>
-      </table>
+          </tr>
+          <tr>
+            <td>📓 <a href="./text/index.html">Voice to Text Agent Demo</a></td>
+            <td>Lets you chat with an agent that listens to voice and replies with text.</td>
+          </tr>
+          <tr>
+            <td>📝 <a href="./transcribe/index.html">Transcription Demo</a></td>
+            <td>Transcribes mic or audio file input.</td>
+          </tr>
+          <tr>
+            <td>🔁 <a href="./noise_reduction/index.html">Loopback Demo</a></td>
+            <td>Echoes back what you say after applying noise reduction.</td>
+          </tr> 
+          <tr>
+            <td>🎨 <a href="./imager/index.html">Image Generation Demo</a></td>
+            <td>Demonstrates how to generate images from a voice conversation.</td>
+          </tr>
+          <tr>
+            <td>🧑‍💻 <a href="./vibecoder/index.html">Vibe Coding Demo</a></td>
+            <td>Demonstrates how to delegate to a reasoning model for code generation.</td>
+          </tr>
+        </table>
+      </div>
       <p class="github-link"><a href="https://github.com/juberti/demos">GitHub</a></p>
     </div>
   </body>

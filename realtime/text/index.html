@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>Realtime Voice to Text Agent</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../main.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a href="../index.html">Realtime Demos</a>
+        <span class="header-icon">📓</span> <span class="header-title">Voice to Text Agent</span>
+      </div>
+      <div> 
+        This demo shows how to use the OpenAI <a href="https://platform.openai.com/docs/guides/realtime" target="_blank">Realtime API</a> to create an agent that listens to voice and replies with text.
+        Add your API key below and click the "Start Mic" button to begin.
+      </div>
+      <div>
+        <label for="openai-api-key"><a href="https://platform.openai.com/settings/organization/api-keys" target="_blank">API Key</a></label>
+        <input id="openai-api-key" type="password" placeholder="Enter your OpenAI API key here"/>
+      </div>
+      <div>
+        <label for="model">Model</label>
+        <select id="model">
+          <option selected>gpt-4o-realtime-preview</option>
+          <option>gpt-4o-mini-realtime-preview</option>
+        </select>
+      </div>
+      <div>
+        <label for="instructions">Instructions</label>
+        <textarea id="instructions" rows="3"></textarea>
+      </div>
+      <div>
+        <label for="output">Output</label>
+        <textarea id="output" rows="3" readonly></textarea>
+      </div>
+      <div class="controls-row">
+        <div class="buttons-group">
+          <button id="start-microphone" onclick="startMicrophone()">Start Mic</button>            
+          <button id="stop" onclick="stop()">Stop</button>
+        </div>
+        <div class="status-indicator">
+          <span id="status"></span>
+        </div>   
+      </div>
+      <p class="github-link"><a href="https://github.com/juberti/demos/tree/main/realtime/text">GitHub</a></p>
+    </div>
+    <script src="../session.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
