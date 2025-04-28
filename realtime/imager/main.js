@@ -85,7 +85,7 @@ async function start() {
 
   const apiKey = getApiKey();
   if (!apiKey) {
-    window.alert('An OpenAI API key is required to use this application.');    
+    window.alert('An OpenAI API key is required to use this application. You can obtain one from https://platform.openai.com/settings/organization/api-keys');    
     return;
   }
     
@@ -95,6 +95,7 @@ async function start() {
   session.ontrack = (e) => handleTrack(e);
   session.onopen = () => handleOpen();
   session.onmessage = (e) => handleMessage(e);
+  session.onerror = (e) => handleError(e);
   await session.start(stream, SESSION_PARAMS);
 }
 
@@ -145,6 +146,11 @@ async function handleMessage(msg) {
       }
       break;
   }
+}
+
+function handleError(e) {
+  console.error(e);
+  stop();
 }
 
 async function generateImage(description, previousImage) {   
