@@ -1,6 +1,6 @@
 # OpenAI Realtime API Demos
 
-This repository contains a set of demos demonstrating OpenAI’s Realtime API features, including speech recognition, noise reduction, and interactive voice responses. The demos are structured within the "realtime" directory and can be run in your browser after providing a valid OpenAI API key.
+This repository contains a set of demos demonstrating OpenAI’s Realtime API features, including speech recognition, noise reduction, and interactive voice responses. The demos are structured within the "realtime" directory and can be run in your browser after providing a valid OpenAI API key. They are also available online [here](https://juberti.github.io/demos).
 
 ## Features
 
