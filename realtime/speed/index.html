@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <title>Realtime Speed Demo</title>
+    <meta charset="utf-8">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../main.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a href="../index.html">Realtime Demos</a>
+        <span class="header-icon">⏩</span> <span class="header-title">Speed Control</span>
+      </div>
+      <div> 
+        This demo shows how to use the OpenAI <a href="https://platform.openai.com/docs/guides/realtime" target="_blank">Realtime API</a> to create an interactive voice agent.
+        Use the slider to control the speaking speed.
+      </div>
+      <div>
+        <label for="openai-api-key"><a href="https://platform.openai.com/settings/organization/api-keys" target="_blank">API Key</a></label>
+        <input id="openai-api-key" type="password" placeholder="Enter your OpenAI API key here"/>
+      </div>
+      <div>
+        <label for="model">Model</label>
+        <select id="model">
+          <option selected>gpt-4o-realtime-preview</option>
+          <option>gpt-4o-mini-realtime-preview</option>
+        </select>
+      </div>
+      <div>
+        <label for="voice">Voice</label>
+        <select id="voice">
+          <option selected>alloy</option>
+          <option>ash</option>
+          <option>ballad</option>
+          <option>coral</option>
+          <option>echo</option>
+          <option>sage</option>
+          <option>shimmer</option>
+          <option>verse</option>
+        </select>
+      </div>
+      <div>
+        <label for="speed">Speed</label>
+        <input id="speed" type="range" min="0.75" max="1.25" step="0.5" value="1"/>
+      </div>
+      <div>
+        <label for="instructions">Instructions</label>
+        <textarea id="instructions" rows="3"></textarea>
+      </div>
+      <div class="controls-row">
+        <div class="buttons-group">
+          <button id="start-microphone" onclick="startMicrophone()">Start Mic</button>            
+          <button id="stop" onclick="stop()">Stop</button>
+        </div>
+        <div class="status-indicator">
+          <span id="status"></span>
+        </div>   
+      </div>
+      <p class="github-link"><a href="https://github.com/juberti/demos/tree/main/realtime/speed">GitHub</a></p>
+    </div>
+    <script src="../session.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
