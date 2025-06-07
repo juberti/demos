@@ -1,93 +1,56 @@
-const APP_PREFIX = "realtime/basic/";
-const $ = document.querySelector.bind(document);
-const apiKeyEl = $("#openai-api-key");
-const modelEl = $("#model");
-const instructionsEl = $("#instructions");
-const outputEl = $("#output");
-const startMicrophoneEl = $("#start-microphone");
-const stopEl = $("#stop");
-const statusEl = $("#status");
-const prefs = [apiKeyEl, modelEl, instructionsEl];
+class TextApp extends App {
+  constructor() {
+    const $ = document.querySelector.bind(document);
+    const apiKeyEl = $("#openai-api-key");
+    const modelEl = $("#model");
+    const instructionsEl = $("#instructions");
+    const outputEl = $("#output");
+    const startBtn = $("#start-microphone");
+    const stopBtn = $("#stop");
+    const statusEl = $("#status");
+    const prefs = [apiKeyEl, modelEl, instructionsEl];
+    super("realtime/basic/", prefs, { startBtn, stopBtn, statusEl });
+    this.modelEl = modelEl;
+    this.instructionsEl = instructionsEl;
+    this.outputEl = outputEl;
+    this.startTime = null;
+    this.initState();
+  }
 
-let session = null;
-let startTime = null;
+  updateState(started) {
+    super.updateState(started);
+    if (!started) this.outputEl.value = "";
+  }
 
-function initState() {
-  prefs.forEach(p => {
-    const fqid = p.id != "openai-api-key" ? APP_PREFIX + p.id : p.id;
-    const v = localStorage.getItem(fqid);
-    if (v) {
-      p.value = v;
+  buildSessionConfig() {
+    return {
+      model: this.modelEl.value,
+      instructions: this.instructionsEl.value || undefined,
+      modalities: ["text"],
+    };
+  }
+
+  onOpen() {
+    this.sendMessage({ type: "response.create" });
+  }
+
+  onMessage(message) {
+    console.log(message);
+    if (message.type === "input_audio_buffer.speech_stopped") {
+      this.startTime = performance.now();
+    } else if (message.type === "response.created") {
+      this.outputEl.value = "";
+    } else if (message.type === "response.text.delta") {
+      if (this.startTime) {
+        const duration = performance.now() - this.startTime;
+        this.controls.statusEl.textContent = `${duration.toFixed(0)}ms`;
+        this.startTime = null;
+      }
+      this.outputEl.value += message.delta;
     }
-    p.addEventListener("change", () => {
-      localStorage.setItem(fqid, p.value);
-    });
-  });
-  updateState(false);
-}
-
-function updateState(started) {
-  outputEl.value = "";
-  statusEl.textContent = "";
-  prefs.forEach(p => p.disabled = started);
-  startMicrophoneEl.disabled = started;
-  stopEl.disabled = !started;
-}
-
-async function startMicrophone() {
-  if (!apiKeyEl.value) {
-    window.alert("Please enter your OpenAI API Key. You can obtain one from https://platform.openai.com/settings/organization/api-keys");
-    return;
-  }
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  start(stream);
-}
-
-async function start(stream) {
-  updateState(true);
-  session = new Session(apiKeyEl.value);
-  session.onconnectionstatechange = state => statusEl.textContent = state;
-  session.onopen = e => handleOpen();
-  session.onmessage = e => handleMessage(e);
-  session.onerror = e => handleError(e);
-  const sessionConfig = {
-    model: modelEl.value,
-    instructions: instructionsEl.value || undefined,
-    modalities: ["text"],
-  }
-  await session.start(stream, sessionConfig);
-}
-
-function stop() {
-  updateState(false);
-  session.stop();
-  session = null;
-}
-
-function handleOpen() {
-  const message = { type: "response.create" };
-  session.sendMessage(message);
-}
-
-function handleMessage(message) {
-  console.log(message);
-  if (message.type === "input_audio_buffer.speech_stopped") {
-    startTime = performance.now();
-  } else if (message.type === "response.created") {
-    outputEl.value = "";  
-  } else if (message.type === "response.text.delta") {
-    if (startTime) {
-      const duration = performance.now() - startTime;
-      statusEl.textContent = `${duration.toFixed(0)}ms`;
-      startTime = null;
-    }
-    outputEl.value += message.delta;
   }
 }
 
-function handleError(e) {
-  console.error(e);
-  stop();
-} 
-
-initState();
+const app = new TextApp();
+window.startMicrophone = () => app.startMicrophone();
+window.stop = () => app.stop();
