@@ -1,14 +1,3 @@
-const $ = document.querySelector.bind(document);
-const instructions = $("#instructions");
-const startBtn = $("#startBtn");
-const muteBtn = $("#muteBtn");
-const downloadBtn = $("#downloadBtn");
-const imageEl = $("#image");
-const statusEl = $("#status");
-startBtn.addEventListener('click', start);
-muteBtn.addEventListener('click', mute);
-downloadBtn.addEventListener('click', download);
-
 const API_BASE = 'https://api.openai.com/v1';
 const INSTRUCTIONS = `
 # Identity
@@ -37,7 +26,7 @@ yet approachable, inviting clients to explore options rather than dictating them
 
 # Pacing
 
-Fast and to the point. Your initial interaction is brief.You present ideas but leave space for the client to weigh in. 
+Fast and to the point. Your initial interaction is brief.You present ideas but leave space for the client to weigh in.
 Each clarification closes a loop before moving ahead, keeping the collaboration smooth and stress-free.
 
 # Tool Usage
@@ -45,169 +34,186 @@ Each clarification closes a loop before moving ahead, keeping the collaboration 
 When contracted to create an image, confirm all requirements: subject, style references and color scheme.
 Ask focused questions until every piece is in place. Then let the client know you're starting work,
 and call create_image with a thorough description covering all agreed-upon details.
-`
+`;
 
 const SESSION_PARAMS = {
   instructions: INSTRUCTIONS,
-  model: "gpt-4o-realtime-preview",
-  voice: "shimmer",
+  model: 'gpt-4o-realtime-preview',
+  voice: 'shimmer',
   tools: [
     {
-      type: "function",
-      name: "create_image",
-      description: "Use this function to create a new image with the given description.",
+      type: 'function',
+      name: 'create_image',
+      description: 'Use this function to create a new image with the given description.',
       parameters: {
-        type: "object",
+        type: 'object',
         properties: {
-          description: { type: "string", description: "The description of the image to create." },
+          description: { type: 'string', description: 'The description of the image to create.' },
         },
-        required: ["description"],
+        required: ['description'],
       },
     },
-  ]
+  ],
 };
 
-const IMAGE_MODEL = "gpt-image-1";
-const IMAGE_SIZE = "1024x1024";
-const IMAGE_QUALITY = "auto";
+const IMAGE_MODEL = 'gpt-image-1';
+const IMAGE_SIZE = '1024x1024';
+const IMAGE_QUALITY = 'auto';
 
-let session = null;
-let previousImage = null;
-
-async function start() {
-  if (session) {
-    startBtn.textContent = "Start";
-    statusEl.textContent = "";
-    session.stop();
-    session = null;
-    return;
-  } 
-
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    window.alert('An OpenAI API key is required to use this application. You can obtain one from https://platform.openai.com/settings/organization/api-keys');    
-    return;
-  }
-    
-  startBtn.textContent = "Stop";
-  const stream = await navigator.mediaDevices.getUserMedia({audio: true});
-  session = new Session(apiKey);
-  session.ontrack = (e) => handleTrack(e);
-  session.onopen = () => handleOpen();
-  session.onmessage = (e) => handleMessage(e);
-  session.onerror = (e) => handleError(e);
-  await session.start(stream, SESSION_PARAMS);
-}
-
-function mute() {
-  session.mute(!session.muted);
-  muteBtn.textContent = session.muted ? "Unmute" : "Mute";
-}
-
-async function download() {
-  if (!previousImage) {
-    console.warn('No image available to download');
-    return;
+class ImagerApp extends App {
+  constructor() {
+    const $ = document.querySelector.bind(document);
+    const instructions = $("#instructions");
+    const startBtn = $("#startBtn");
+    const muteBtn = $("#muteBtn");
+    const downloadBtn = $("#downloadBtn");
+    const imageEl = $("#image");
+    const statusEl = $("#status");
+    super("realtime/imager/", [], { startBtn, statusEl });
+    this.instructions = instructions;
+    this.startBtn = startBtn;
+    this.muteBtn = muteBtn;
+    this.downloadBtn = downloadBtn;
+    this.imageEl = imageEl;
+    this.previousImage = null;
+    startBtn.addEventListener('click', () => this.toggle());
+    muteBtn.addEventListener('click', () => this.toggleMute());
+    downloadBtn.addEventListener('click', () => this.download());
+    this.initState();
   }
 
-  const url = imageEl.src;
-  const a = document.createElement('a');
-  a.style.display = 'none';
-  a.href = url;
-  a.download = 'image.png';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-
-function handleTrack(e) {
-  const audio = new Audio();
-  audio.srcObject = e.streams[0];
-  audio.play();  
-}
-
-async function handleOpen(e) {
-  statusEl.textContent = "connected";
-  const createResponse = { type: "response.create" };
-  session.sendMessage(createResponse);
-}
-
-async function handleMessage(msg) {
-  switch (msg.type) {
-    case "response.function_call_arguments.done":
-      if (msg.name === "create_image") {
-        const description = JSON.parse(msg.arguments).description;
-        instructions.value = description;
-        statusEl.textContent = "generating image";
-        const code = await generateImage(description, previousImage);
-        loadImage(code);
-        previousImage = code;
-        statusEl.textContent = "";
-      }
-      break;
+  getApiKey() {
+    return getApiKey();
   }
-}
 
-function handleError(e) {
-  console.error(e);
-  stop();
-}
+  updateState(started) {
+    super.updateState(started);
+    this.startBtn.textContent = started ? 'Stop' : 'Start';
+    this.muteBtn.disabled = !started;
+  }
 
-async function generateImage(description, previousImage) {   
-  let path, contentType, body;
-  if (!previousImage) {  
-      path = "images/generations";
-      contentType = "application/json";
+  buildSessionConfig() {
+    return SESSION_PARAMS;
+  }
+
+  async toggle() {
+    if (this.session) {
+      this.stop();
+    } else {
+      await this.startMicrophone();
+    }
+  }
+
+  toggleMute() {
+    this.mute(!this.session?.muted);
+    this.muteBtn.textContent = this.session?.muted ? 'Unmute' : 'Mute';
+  }
+
+  onTrack(e) {
+    const audio = new Audio();
+    audio.srcObject = e.streams[0];
+    audio.play();
+  }
+
+  onOpen() {
+    this.controls.statusEl.textContent = 'connected';
+    this.sendMessage({ type: 'response.create' });
+  }
+
+  async onMessage(msg) {
+    switch (msg.type) {
+      case 'response.function_call_arguments.done':
+        if (msg.name === 'create_image') {
+          const description = JSON.parse(msg.arguments).description;
+          this.instructions.value = description;
+          this.controls.statusEl.textContent = 'generating image';
+          const code = await this.generateImage(description, this.previousImage);
+          this.loadImage(code);
+          this.previousImage = code;
+          this.controls.statusEl.textContent = '';
+        }
+        break;
+    }
+  }
+
+  onError(e) {
+    console.error(e);
+    this.stop();
+  }
+
+  async generateImage(description, previousImage) {
+    let path, contentType, body;
+    if (!previousImage) {
+      path = 'images/generations';
+      contentType = 'application/json';
       body = JSON.stringify({
         model: IMAGE_MODEL,
         prompt: description,
         quality: IMAGE_QUALITY,
-        size: IMAGE_SIZE
-    });
-  } else {
-    path = "images/edits";
-    const binaryString = atob(previousImage);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
+        size: IMAGE_SIZE,
+      });
+    } else {
+      path = 'images/edits';
+      const binaryString = atob(previousImage);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const blob = new Blob([bytes], { type: 'image/png' });
+      const form = new FormData();
+      form.append('model', IMAGE_MODEL);
+      form.append('prompt', description);
+      form.append('quality', IMAGE_QUALITY);
+      form.append('image', blob);
+      form.append('size', IMAGE_SIZE);
+      body = form;
     }
-    const blob = new Blob([bytes], { type: "image/png" });
-    const form = new FormData();
-    form.append("model", IMAGE_MODEL);
-    form.append("prompt", description);
-    form.append("quality", IMAGE_QUALITY);
-    form.append("image", blob);
-    form.append("size", IMAGE_SIZE);
-    body = form;
+
+    const url = `${API_BASE}/${path}`;
+    const headers = {
+      Authorization: `Bearer ${this.getApiKey()}`,
+    };
+    if (contentType) {
+      headers['Content-Type'] = contentType;
+    }
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: body,
+    });
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.data[0].b64_json;
+    if (!content) {
+      throw new Error('Invalid API response format.');
+    }
+
+    return content;
   }
 
-  const url = `${API_BASE}/${path}`;
-  const headers = { 
-    'Authorization': `Bearer ${getApiKey()}`
-  };
-  if (contentType) {
-    headers['Content-Type'] = contentType;
-  }
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: headers,
-    body: body,
-  });
-  if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
+  loadImage(content) {
+    this.imageEl.src = 'data:image/png;base64,' + content;
   }
 
-  const data = await response.json();
-  const content = data.data[0].b64_json;
-  if (!content) {
-    throw new Error('Invalid API response format.');
-  }
+  async download() {
+    if (!this.previousImage) {
+      console.warn('No image available to download');
+      return;
+    }
 
-  return content;
+    const url = this.imageEl.src;
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'image.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 }
 
-function loadImage(content) {
-  const image = document.getElementById('image');
-  image.src = 'data:image/png;base64,' + content;
-}
+const app = new ImagerApp();

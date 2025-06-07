@@ -1,86 +1,44 @@
-const APP_PREFIX = "realtime/basic/";
-const $ = document.querySelector.bind(document);
-const apiKeyEl = $("#openai-api-key");
-const modelEl = $("#model");
-const voiceEl = $("#voice");
-const instructionsEl = $("#instructions");
-const startMicrophoneEl = $("#start-microphone");
-const stopEl = $("#stop");
-const statusEl = $("#status");
-const prefs = [apiKeyEl, modelEl, voiceEl, instructionsEl];
-
-let session = null;
-
-function initState() {
-  prefs.forEach(p => {
-    const fqid = p.id != "openai-api-key" ? APP_PREFIX + p.id : p.id;
-    const v = localStorage.getItem(fqid);
-    if (v) {
-      p.value = v;
-    }
-    p.addEventListener("change", () => {
-      localStorage.setItem(fqid, p.value);
-    });
-  });
-  updateState(false);
-}
-
-function updateState(started) {
-  statusEl.textContent = "";
-  prefs.forEach(p => p.disabled = started);
-  startMicrophoneEl.disabled = started;
-  stopEl.disabled = !started;
-}
-
-async function startMicrophone() {
-  if (!apiKeyEl.value) {
-    window.alert("Please enter your OpenAI API Key. You can obtain one from https://platform.openai.com/settings/organization/api-keys");
-    return;
+class BasicApp extends App {
+  constructor() {
+    const $ = document.querySelector.bind(document);
+    const apiKeyEl = $("#openai-api-key");
+    const modelEl = $("#model");
+    const voiceEl = $("#voice");
+    const instructionsEl = $("#instructions");
+    const startBtn = $("#start-microphone");
+    const stopBtn = $("#stop");
+    const statusEl = $("#status");
+    const prefs = [apiKeyEl, modelEl, voiceEl, instructionsEl];
+    super("realtime/basic/", prefs, { startBtn, stopBtn, statusEl });
+    this.modelEl = modelEl;
+    this.voiceEl = voiceEl;
+    this.instructionsEl = instructionsEl;
+    this.initState();
   }
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  start(stream);
-}
 
-async function start(stream) {
-  updateState(true);
-  session = new Session(apiKeyEl.value);
-  session.onconnectionstatechange = state => statusEl.textContent = state;
-  session.ontrack = e => handleTrack(e);
-  session.onopen = e => handleOpen();
-  session.onmessage = e => handleMessage(e);
-  session.onerror = e => handleError(e);
-  const sessionConfig = {
-    model: modelEl.value,
-    voice: voiceEl.value,
-    instructions: instructionsEl.value || undefined
+  buildSessionConfig() {
+    return {
+      model: this.modelEl.value,
+      voice: this.voiceEl.value,
+      instructions: this.instructionsEl.value || undefined,
+    };
   }
-  await session.start(stream, sessionConfig);
+
+  onTrack(e) {
+    const audio = new Audio();
+    audio.srcObject = e.streams[0];
+    audio.play();
+  }
+
+  onOpen() {
+    this.sendMessage({ type: "response.create" });
+  }
+
+  onMessage(message) {
+    console.log("message", message);
+  }
 }
 
-function stop() {
-  updateState(false);
-  session.stop();
-  session = null;
-}
-
-function handleTrack(e) {
-  const audio = new Audio();
-  audio.srcObject = e.streams[0];
-  audio.play();  
-}
-
-function handleOpen() {
-  const message = { type: "response.create" };
-  session.sendMessage(message);
-}
-
-function handleMessage(message) {
-  console.log("message", message);
-}
-
-function handleError(e) {
-  console.error(e);
-  stop();
-} 
-
-initState();
+const app = new BasicApp();
+window.startMicrophone = () => app.startMicrophone();
+window.stop = () => app.stop();
